@@ -1,6 +1,6 @@
 import bpy
-from functions_log import *
 from functions_scene import *
+from libs.python_helper_functions.functions_log import *
 
 
 def rename_object(o: bpy.types.Object, name: str):
@@ -31,7 +31,21 @@ def rename_objects_to_lower(objects: list[bpy.types.Object]):
         rename_object_to_lower(o)
 
 
+def rename_data_to_object_name(o: bpy.types.Object):
+    if o.data and o.data.users == 1:
+        o.data.name = o.name
+
+
+def rename_data_to_object_names(objects: list[bpy.types.Object]):
+    for o in objects:
+        rename_data_to_object_name(o)
+    return
+
+
+clear()
 objects = get_selected_meshes()
 rename_objects_to_lower(objects)
-rename_objects_replace(objects, "plane", "material")
+rename_objects_replace(objects, "part", "hard_surfaces_2")
+rename_objects_replace(objects, " ", "_")
+rename_data_to_object_names(objects)
 print_done()

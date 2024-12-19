@@ -11,7 +11,7 @@ class DatabaseQueue:
         check_same_thread=False,
     ) -> None:
         self.con = sqlite3.connect(
-            "F:\\Code Repositories\\Python Projects\\Blender Scripts\\modules\\database\\database.db",
+            "F:\Code Repositories\Git Repositories\\animation-workflow-blender-scripts\modules\database\database.db",
             # "modules/database/database.db",
             check_same_thread=check_same_thread,
         )

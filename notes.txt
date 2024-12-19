@@ -1,0 +1,5 @@
+# https://github.com/JacquesLucke/blender_vscode
+# In Blender preferences >> File Paths, set Scripts to "F:\Code Repositories\Python Projects\Blender Scripts\"
+
+
+# https://www.youtube.com/watch?v=0_QskeU8CPo&ab_channel=CGPython

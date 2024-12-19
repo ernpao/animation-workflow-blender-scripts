@@ -1,3 +1,0 @@
-[submodule "modules/submodules/python-helper-functions"]
-	path = modules/submodules/python-helper-functions
-	url = git@github.com:ernpao/python-helper-functions.git

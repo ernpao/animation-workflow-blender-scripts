@@ -2,8 +2,8 @@ import math
 
 import bpy
 from functions_distribute import *
-from functions_log import *
 from functions_scene import *
+from libs.python_helper_functions.functions_log import *
 
 # This makes rotated copies of all meshes in a scene. Mainly Use for creating pre-rotated walls, doors, etc. for asset libraries.
 

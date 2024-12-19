@@ -1,6 +1,6 @@
 from functions_distribute import *
-from functions_log import *
 from functions_scene import *
+from libs.python_helper_functions.functions_log import *
 
 clear()
 tlo = select_top_level_objects()

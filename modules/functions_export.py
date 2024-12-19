@@ -1,6 +1,6 @@
 import bpy
-from functions_log import *
 from functions_scene import *
+from libs.python_helper_functions.functions_log import *
 
 
 def __export(
@@ -83,4 +83,3 @@ def export_top_level_objects_as_obj():
 
 
 export_top_level_objects_as_obj()
-

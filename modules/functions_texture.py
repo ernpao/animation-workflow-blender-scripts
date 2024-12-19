@@ -2,8 +2,8 @@ import numbers
 
 import bpy
 from functions_distribute import *
-from functions_log import *
 from functions_scene import *
+from libs.python_helper_functions.functions_log import *
 
 
 def add_new_material_to_object(

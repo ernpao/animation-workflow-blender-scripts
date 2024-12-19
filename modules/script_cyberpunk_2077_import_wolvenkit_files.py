@@ -6,12 +6,12 @@ import bpy.utils.previews
 from bpy.props import BoolProperty, CollectionProperty, EnumProperty, StringProperty
 from bpy_extras.io_utils import ExportHelper, ImportHelper
 from functions_distribute import *
-from functions_log import *
 from functions_scene import *
 from libs.cyberpunk_2077_utils.main.attribute_import import manage_garment_support
 from libs.cyberpunk_2077_utils.main.setup import MaterialBuilder
 from libs.io_scene_gltf2.blender.imp.gltf2_blender_gltf import BlenderGlTF
 from libs.io_scene_gltf2.io.imp.gltf2_io_gltf import glTFImporter
+from libs.python_helper_functions.functions_log import *
 
 WOLVENKIT_GARMENTS_LOCATION = "F:\\WolvenKit\\WolvenKit_Projects\\Cyberpunk_2077_Garments\\source\\raw\\base\\characters\\garment"
 BLENDER_FILES_LOCATION = (

@@ -1,4 +1,5 @@
 import bpy
+from functions_document import *
 from functions_scene import *
 from libs.python_helper_functions.functions_log import *
 
@@ -83,3 +84,4 @@ def export_top_level_objects_as_obj():
 
 
 export_top_level_objects_as_obj()
+document_open_location()

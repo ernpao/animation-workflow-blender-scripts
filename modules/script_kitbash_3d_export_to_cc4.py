@@ -215,7 +215,7 @@ def __export_models():
 
         # __export_textures_with_cc4_folder_structure(o.name, kit_name)
 
-    # os.startfile(os.path.realpath(f"{bpy.path.abspath('//')}\\FBX"))
+    os.startfile(os.path.realpath(f"{bpy.path.abspath('//')}\\FBX"))
 
 
 # if __name__ == "__main__":

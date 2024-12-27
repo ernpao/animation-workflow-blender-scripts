@@ -42,10 +42,26 @@ def rename_data_to_object_names(objects: list[bpy.types.Object]):
     return
 
 
+def __rename_oleg_ushenok_hard_surface_kit():
+
+    clear()
+    objects = get_selected_meshes()
+    count = 1
+    for o in objects:
+        rename_object(o, f"ou_hs_sf_kit_2_{str(count).zfill(3)}")
+        rename_data_to_object_name(o)
+        count += 1
+
+    print_done()
+
+
+# __rename_oleg_ushenok_hard_surface_kit()
+
 clear()
 objects = get_selected_meshes()
-rename_objects_to_lower(objects)
-rename_objects_replace(objects, "part", "hard_surfaces_2")
-rename_objects_replace(objects, " ", "_")
+# rename_objects_to_lower(objects)
+# rename_objects_replace(objects, "part", "hard_surfaces_2")
+# rename_objects_replace(objects, " ", "_")
 rename_data_to_object_names(objects)
+
 print_done()

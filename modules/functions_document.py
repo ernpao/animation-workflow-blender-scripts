@@ -30,3 +30,8 @@ def for_each_blend_file_in_directory(directory: str, callback):
     files = get_blend_files_in_directory(directory)
     for f in files:
         callback(f)
+
+
+def document_open_location():
+    if bpy.data.filepath:
+        file_open_location(bpy.data.filepath)

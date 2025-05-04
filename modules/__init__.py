@@ -1,7 +1,9 @@
 import bpy
+from bpy.props import BoolProperty, IntProperty
 from class_task_queue import CF_Task_Dequeue
 from functions_distribute import *
 from functions_orientation import *
+from functions_retopology import *
 from main_blender_server import *
 
 # blender_version = getattr(bpy.app, "version")
@@ -128,6 +130,124 @@ class Addon_Panel(bpy.types.Panel):
             icon="TRIA_RIGHT",
         )
         row = layout.row(align=True)
+
+
+class CF_Retopologize_Properties(bpy.types.PropertyGroup):
+    target_face_count: bpy.props.IntProperty(
+        name="Target Faces",
+        description="Desired number of faces in the output mesh",
+        default=4000,
+        min=10,  # Sensible minimum
+        max=1000000,  # Sensible maximum
+    )  # type: ignore
+    use_mesh_symmetry: bpy.props.BoolProperty(
+        name="Use Symmetry",
+        description="Use mesh symmetry axes if available",
+        default=True,
+    )  # type: ignore
+    preserve_sharp: bpy.props.BoolProperty(
+        name="Preserve Sharp",
+        description="Try to preserve sharp edges (marked edges)",
+        default=False,
+    )  # type: ignore
+    seed: bpy.props.IntProperty(
+        name="Seed",
+        description="Random seed for the algorithm (change for different results)",
+        default=0,
+        min=0,
+    )  # type: ignore
+
+
+# --- 2. Operator ---
+# Performs the action when the button is clicked
+
+
+class CF_Retopologize(bpy.types.Operator):
+    """Runs the QuadriFlow remesher with settings from the panel"""
+
+    bl_idname = (
+        "object.retopologize_custom"  # Changed from custom_functions.retopologize
+    )
+    bl_label = "Run Retopology"
+    bl_options = {"REGISTER", "UNDO"}  # Enable Undo
+
+    @classmethod
+    def poll(cls, context):
+        # Operator should only be active if the panel is visible
+        return (
+            context.active_object
+            and context.active_object.type == "MESH"
+            and context.mode == "OBJECT"
+        )
+
+    def execute(self, context):
+        # Get the properties stored in the Scene
+        scene_props = context.scene.retopo_props
+
+        # Call your actual retopology function, passing the properties
+        # Also pass 'self' (the operator instance) to allow reporting errors back to UI
+        result = retopologize_selected(
+            target_face_count=scene_props.target_face_count,
+            use_mesh_symmetry=scene_props.use_mesh_symmetry,
+            preserve_sharp=scene_props.preserve_sharp,
+            seed=scene_props.seed,
+            # operator=self,  # Pass operator instance
+        )
+
+        # Return the result reported by the function
+        return result
+
+
+# --- 3. Panel ---
+# Defines the UI layout in the 3D View Sidebar
+
+
+class Retopology_Panel(bpy.types.Panel):
+    bl_idname = "CF_PT_retopologizer_layout"
+    bl_label = "Retopologizer"
+    bl_category = "Retopology"  # Creates a new tab if it doesn't exist
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"  # Only show panel in object mode (alternative to poll)
+
+    # @classmethod # Optional: bl_context replaces basic poll
+    # def poll(cls, context):
+    #     obj = context.active_object
+    #     return obj and obj.type == "MESH" and context.mode == "OBJECT"
+
+    def draw(self, context):
+        layout = self.layout
+        # Get the properties stored in the Scene
+        scene_props = context.scene.retopo_props
+
+        # Check if an object is selected (optional, poll/context should handle this)
+        # obj = context.active_object
+        # if not obj or obj.type != 'MESH':
+        #     layout.label(text="Select a Mesh Object in Object Mode.")
+        #     return
+
+        box = layout.box()  # Group elements visually
+
+        # Create UI elements linked to the PropertyGroup properties
+        box.prop(scene_props, "target_face_count")  # Uses name defined in IntProperty
+        box.prop(
+            scene_props, "use_mesh_symmetry", text="Use Symmetry"
+        )  # Override text if needed
+        box.prop(scene_props, "preserve_sharp", text="Preserve Sharp Edges")
+        box.prop(scene_props, "seed", text="Random Seed")
+
+        # Button to trigger the retopology operation
+        layout.separator()  # Add some space
+        row = layout.row(align=True)
+        # Use the bl_idname of your Operator class here
+        row.operator(
+            CF_Retopologize.bl_idname,
+            text="Retopologize",
+            icon="MOD_REMESH",
+        )
+
+
+# --- 4. Registration ---
 
 
 class CF_Align_X(bpy.types.Operator):
@@ -337,6 +457,9 @@ class CF_Rotate_Z_90_CW(bpy.types.Operator):
 
 class_list = [
     Addon_Panel,
+    Retopology_Panel,
+    CF_Retopologize,
+    CF_Retopologize_Properties,
     CF_Align_X,
     CF_Align_Y,
     CF_Align_Z,
@@ -362,10 +485,15 @@ registered_classes = []
 
 def register():
     print("Registering classes...")
+
     for cls in class_list:
         bpy.utils.register_class(cls)
         registered_classes.append(cls)
     print("Classes registered!")
+
+    bpy.types.Scene.retopo_props = bpy.props.PointerProperty(
+        type=CF_Retopologize_Properties
+    )
 
 
 def unregister():

@@ -1,3 +1,2 @@
 call activate "blender_3_5"
-python "main_blender_server.py" %*
-pause
+start "Blender Server" python "main_blender_server.py" %*

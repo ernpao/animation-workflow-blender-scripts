@@ -131,23 +131,43 @@ class Addon_Panel(bpy.types.Panel):
         )
         row = layout.row(align=True)
 
+        # ----- ARRANGE ----- #
+
+        layout.label(text="Arrange Selected:")
+
+        row = layout.row()
+        row.operator(
+            "custom_functions.distribute_selected_meshes",
+            text="Distribute Selected",
+        )
+        row = layout.row(align=True)
+
+        # ----- IMPORT ----- #
+
+        layout.label(text="Import:")
+
+        row = layout.row()
+        # Blender's built-in STL importer; opens the file browser.
+        row.operator("wm.stl_import", text="STL")
+        row = layout.row(align=True)
+
 
 class CF_Retopologize_Properties(bpy.types.PropertyGroup):
     target_face_count: bpy.props.IntProperty(
         name="Target Faces",
-        description="Desired number of faces in the output mesh",
+        description="Approximate number of quads in the output mesh",
         default=4000,
         min=10,  # Sensible minimum
         max=1000000,  # Sensible maximum
     )  # type: ignore
     use_mesh_symmetry: bpy.props.BoolProperty(
         name="Use Symmetry",
-        description="Use mesh symmetry axes if available",
+        description="Mirror the result across the mesh's symmetry axes (the X/Y/Z toggles in the Edit/Sculpt mode header)",
         default=True,
     )  # type: ignore
     preserve_sharp: bpy.props.BoolProperty(
         name="Preserve Sharp",
-        description="Try to preserve sharp edges (marked edges)",
+        description="Make edge loops follow sharp creases (over 40 degrees) and edges marked sharp",
         default=False,
     )  # type: ignore
     seed: bpy.props.IntProperty(
@@ -163,7 +183,7 @@ class CF_Retopologize_Properties(bpy.types.PropertyGroup):
 
 
 class CF_Retopologize(bpy.types.Operator):
-    """Runs the QuadriFlow remesher with settings from the panel"""
+    """Quad-remeshes the active mesh into a new object with settings from the panel"""
 
     bl_idname = (
         "object.retopologize_custom"  # Changed from custom_functions.retopologize
@@ -191,7 +211,7 @@ class CF_Retopologize(bpy.types.Operator):
             use_mesh_symmetry=scene_props.use_mesh_symmetry,
             preserve_sharp=scene_props.preserve_sharp,
             seed=scene_props.seed,
-            # operator=self,  # Pass operator instance
+            operator=self,
         )
 
         # Return the result reported by the function
@@ -371,6 +391,17 @@ class CF_Distribute_Z(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class CF_Distribute_Selected_Meshes(bpy.types.Operator):
+    bl_idname = "custom_functions.distribute_selected_meshes"
+    bl_label = "Custom Function: Distribute Selected Meshes"
+    bl_description = "Arrange selected meshes in a grid on the XY plane."
+    size: bpy.props.IntProperty()
+
+    def execute(self, context):
+        distribute_selected_meshes(set_object_centers=False, spacing_factor=1)
+        return {"FINISHED"}
+
+
 # class CF_Server_Start(bpy.types.Operator):
 #     bl_idname = "blender_server.start"
 #     bl_label = "Custom Function: BLENDER_SERVER_START"
@@ -466,6 +497,7 @@ class_list = [
     CF_Distribute_X,
     CF_Distribute_Y,
     CF_Distribute_Z,
+    CF_Distribute_Selected_Meshes,
     CF_Align_Centers_To_World_Origin,
     CF_Align_Centers_To_World_XY,
     CF_Align_Centers_To_Active_XY,
